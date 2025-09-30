@@ -61,7 +61,6 @@ const ChatInterface = ({ conversation, onNewConversation }) => {
       setMessages(prev => [...prev, response.data.message]);
     } catch (error) {
       console.error('Error sending message:', error);
-      // Add error message
       setMessages(prev => [...prev, {
         id: Date.now(),
         role: 'assistant',

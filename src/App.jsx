@@ -78,14 +78,14 @@ const handleDeleteDocument = async (documentId) => {
     await documentApi.delete(documentId);
     setDocuments(prev => prev.filter(doc => doc.id !== documentId));
     toast("Document deleted successfully");
-    loadDocuments(); // Refresh the list
+    loadDocuments(); 
   } catch (error) {
     toast("Error deleting document");
     console.error('Delete error:', error);
   }
 };
 
-  // Mobile sidebar trigger
+
   const MobileSidebarTrigger = () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -144,7 +144,7 @@ const handleDeleteDocument = async (documentId) => {
               isMobile={false}
             />
 
-            {/* Main Content Area - Now properly inside Tabs */}
+            {/* Main Content Area */}
             <SidebarInset className="flex-1 flex flex-col">
               <TabsContent value="chat" className="flex-1 flex m-0 data-[state=inactive]:hidden">
                 <ChatInterface

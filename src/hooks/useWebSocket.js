@@ -1,4 +1,3 @@
-// src/hooks/useWebSocket.js (Updated)
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createWebSocket } from '../lib/api';
 
@@ -11,7 +10,6 @@ export const useWebSocket = (conversationId) => {
   const connect = useCallback(() => {
     if (!conversationId) return;
 
-    // Use your superior createWebSocket function
     ws.current = createWebSocket(conversationId);
 
     ws.current.onopen = () => {
@@ -49,8 +47,7 @@ export const useWebSocket = (conversationId) => {
       console.log('WebSocket disconnected:', event.code, event.reason);
       setIsConnected(false);
       
-      // Attempt reconnect after 3 seconds (only for unexpected closures)
-      if (event.code !== 1000) { // Don't reconnect if closed normally
+      if (event.code !== 1000) { 
         setTimeout(() => {
           if (conversationId) {
             connect();

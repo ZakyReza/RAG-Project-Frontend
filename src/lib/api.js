@@ -1,4 +1,3 @@
-// src/lib/api.js
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
@@ -10,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Conversation API
 export const conversationApi = {
   create: (data) => api.post('/conversations', data),
   getAll: () => api.get('/conversations'),
@@ -19,7 +17,7 @@ export const conversationApi = {
   sendMessage: (id, data) => api.post(`/conversations/${id}/chat`, data),
   delete: (id) => api.delete(`/conversations/${id}`), 
 }
-// Document API
+
 export const documentApi = {
   upload: (file) => {
     const formData = new FormData();
@@ -33,7 +31,6 @@ export const documentApi = {
 };
 
 
-// WebSocket utility
 export const createWebSocket = (conversationId) => {
   const wsUrl = API_BASE_URL.replace('http', 'ws').replace('/api', '') + `/ws/${conversationId}`;
   return new WebSocket(wsUrl);

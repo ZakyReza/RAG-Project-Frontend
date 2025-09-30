@@ -29,7 +29,7 @@ const handleFileUpload = async (event) => {
     await documentApi.upload(file);
     onUpload();
     onRefresh();
-    // Reset file input
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
