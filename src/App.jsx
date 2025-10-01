@@ -58,6 +58,11 @@ function App() {
     }
   };
 
+  const handleSelectConversation = (conversation) => {
+  setSelectedConversation(conversation);
+  setActiveTab('chat'); 
+};
+
   const deleteConversation = async (id) => {
   try {
 
@@ -98,7 +103,7 @@ const handleDeleteDocument = async (documentId) => {
         <ConversationSidebar
           conversations={conversations}
           selectedConversation={selectedConversation}
-          onSelect={setSelectedConversation}
+          onSelect={handleSelectConversation}
           onCreate={createNewConversation}
           onDelete={deleteConversation}
           isMobile={true}
@@ -139,7 +144,7 @@ const handleDeleteDocument = async (documentId) => {
             <ConversationSidebar
               conversations={conversations}
               selectedConversation={selectedConversation}
-              onSelect={setSelectedConversation}
+              onSelect={handleSelectConversation}
               onCreate={createNewConversation}
               onDelete={deleteConversation}
               isMobile={false}
