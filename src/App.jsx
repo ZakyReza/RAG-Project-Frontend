@@ -51,6 +51,7 @@ function App() {
       const newConversation = response.data;
       setConversations(prev => [newConversation, ...prev]);
       setSelectedConversation(newConversation);
+      setActiveTab('chat');
       toast("Conversation created");
     } catch (error) {
       toast("Error creating conversation");
