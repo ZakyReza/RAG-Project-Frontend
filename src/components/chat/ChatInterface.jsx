@@ -47,6 +47,13 @@ const ChatInterface = ({ conversation, onNewConversation }) => {
       timestamp: new Date().toISOString(),
     };
 
+     const tempUserMessage = {
+      id: `temp-${Date.now()}`,  // Use temp ID to avoid conflicts
+      role: 'user',
+      content: input,
+      timestamp: new Date().toISOString(),
+    };
+
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
@@ -58,11 +65,17 @@ const ChatInterface = ({ conversation, onNewConversation }) => {
         stream: false,
       });
 
-      setMessages(prev => [...prev, response.data.message]);
+       setMessages(prev => 
+        prev.filter(msg => msg.id !== tempUserMessage.id)
+            .concat([response.data.message])
+      );
+
+        await loadMessages();
     } catch (error) {
       console.error('Error sending message:', error);
+
       setMessages(prev => [...prev, {
-        id: Date.now(),
+        id:  `error-${Date.now()}`,
         role: 'assistant',
         content: 'Sorry, I encountered an error. Please try again.',
         timestamp: new Date().toISOString(),
@@ -78,6 +91,10 @@ const ChatInterface = ({ conversation, onNewConversation }) => {
       sendMessage();
     }
   };
+
+  console.log('💬 Current messages state:', messages);
+  console.log('🎯 Selected conversation:', conversation);
+
 
   if (!conversation) {
     return (
@@ -106,6 +123,10 @@ const ChatInterface = ({ conversation, onNewConversation }) => {
         <p className="text-sm text-muted-foreground">
           Last updated: {formatDate(conversation.updated_at)}
         </p>
+               {/* Debug info */}
+        <p className="text-xs text-muted-foreground mt-1">
+          Messages: {messages.length} | ID: {conversation.id}
+        </p>
       </div>
 
       {/* Messages Area */}
@@ -123,6 +144,10 @@ const ChatInterface = ({ conversation, onNewConversation }) => {
               <span className="text-xs opacity-70 block mt-1">
                 {formatDate(message.timestamp)}
               </span>
+                             {/* Debug: Show message ID */}
+                <span className="text-xs opacity-50 block mt-1">
+                  ID: {message.id}
+                </span>
             </div>
           </div>
         ))}

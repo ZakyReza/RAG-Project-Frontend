@@ -12,18 +12,41 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetTrigger,} from './components/ui/sheet';
 
 
-
 function App() {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [activeTab, setActiveTab] = useState('chat');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadConversations();
-    loadDocuments();
-  }, []  
-);
+    const loadData = async () => {
+      setIsLoading(true); 
+      await loadConversations();
+      await loadDocuments();
+      setIsLoading(false); 
+    };
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (conversations.length > 0) {
+      const savedConversationId = localStorage.getItem('selectedConversationId');
+      if (savedConversationId) {
+        const conversationId = parseInt(savedConversationId);
+        const conversation = conversations.find(conv => conv.id === conversationId);
+        if (conversation) {
+          setSelectedConversation(conversation);
+          console.log('✅ Restored conversation from localStorage:', conversation.title);
+        } else {
+          // Conversation was deleted or doesn't exist
+          localStorage.removeItem('selectedConversationId');
+        }
+      }
+      setIsLoading(false);
+    }
+  }, [conversations]); 
+
 
   const loadConversations = async () => {
     try {
@@ -52,6 +75,7 @@ function App() {
       setConversations(prev => [newConversation, ...prev]);
       setSelectedConversation(newConversation);
       setActiveTab('chat');
+       localStorage.setItem('selectedConversationId', newConversation.id.toString());
       toast("Conversation created");
     } catch (error) {
       toast("Error creating conversation");
@@ -61,6 +85,7 @@ function App() {
   const handleSelectConversation = (conversation) => {
   setSelectedConversation(conversation);
   setActiveTab('chat'); 
+  localStorage.setItem('selectedConversationId', conversation.id.toString());
 };
 
   const deleteConversation = async (id) => {
@@ -71,6 +96,7 @@ function App() {
     setConversations(prev => prev.filter(conv => conv.id !== id));
     if (selectedConversation?.id === id) {
       setSelectedConversation(null);
+      localStorage.removeItem('selectedConversationId');
     }
     toast("Conversation deleted");
   } catch (error) {
@@ -90,6 +116,18 @@ const handleDeleteDocument = async (documentId) => {
     console.error('Delete error:', error);
   }
 };
+
+if (isLoading) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading conversations...</p>
+        </div>
+      </div>
+    );
+  }
+
 
 
   const MobileSidebarTrigger = () => (
