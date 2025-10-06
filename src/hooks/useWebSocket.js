@@ -10,16 +10,24 @@ export const useWebSocket = (conversationId) => {
   const connect = useCallback(() => {
     if (!conversationId) return;
 
+    
+    // Close existing connection
+    if (ws.current) {
+      ws.current.close();
+    }
+
+
     ws.current = createWebSocket(conversationId);
 
     ws.current.onopen = () => {
-      console.log('WebSocket connected');
+      console.log('✅ WebSocket connected for conversation:', conversationId);
       setIsConnected(true);
     };
 
     ws.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log('📨 WebSocket message received:', data);
         
         switch (data.type) {
           case 'typing':
@@ -34,6 +42,10 @@ export const useWebSocket = (conversationId) => {
               timestamp: new Date().toISOString()
             }]);
             break;
+
+          case 'error':
+          console.error('WebSocket error:', data.message);
+          break;
           
           default:
             console.log('Unknown message type:', data.type);
@@ -64,9 +76,12 @@ export const useWebSocket = (conversationId) => {
 
   const sendMessage = useCallback((message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({ message }));
+      ws.current.send(JSON.stringify({
+        type: 'message',
+        content: message  }));
       return true;
     }
+    console.warn('WebSocket not connected');
     return false;
   }, []);
 
@@ -92,6 +107,7 @@ export const useWebSocket = (conversationId) => {
       connect();
     } else {
       disconnect();
+      setMessages([]);
     }
 
     return () => {
